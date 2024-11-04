@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 
-const ToggleSwitch = ({ label, onChange }) => {
+const ToggleSwitch = ({ label, onChange, setResult }) => {
     const [isChecked, setIsChecked] = useState(false);
 
     const handleToggle = (e) => {
         e.preventDefault();
         setIsChecked(!isChecked);
         onChange(!isChecked); // Llama a la función onChange con el nuevo estado
+
+        // si el toggle se desactiva, se limpian los datos de la grafica
+        if (isChecked)
+            setResult([])
     };
 
     return (

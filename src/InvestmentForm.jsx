@@ -1,54 +1,73 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import ToggleSwitch from './ToggleSwitch';
 
 
-const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculateFixedInvestWithReinvest }) => {
+const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculateFixedInvestWithReinvest,
+                      setResultCompoundInvestment, setResultFixedInvestment, setResultInvestWithReinvest }) => {
+  const [amount, setAmount] = useState('')
+  const [monthsDuration, setMonthsDuration] = useState('')
   const [fixedInvestment, setFixedInvestment] = useState({
-    amount: '',
+    amount: amount,
     interest_rate: '',
-    months_duration: '',
+    months_duration: monthsDuration,
   });
 
   const [fixedInvestmentWithReinvestment, setFixedInvestmentWithReinvestment] = useState({
-    amount: '',
+    amount: amount,
     interest_rate: '',
-    months_duration: '',
+    months_duration: monthsDuration,
   });
 
   const [compoundInvestment, setCompoundInvestment] = useState({
-    amount: '',
+    amount: amount,
     interest_rate: '',
-    months_duration: '',
+    months_duration: monthsDuration,
   });
 
+  const [showCompoundInvstment, setShowCompoundInvestment] = useState(false)
   const [showFixedInvest, setShowFixedInvest] = useState(false)
   const [showFixedInvestWithReinvest, setShowFixedInvestWithReinvest] = useState(false)
+  const [allowSubmit, setAllowSubmit] = useState(false)
 
 
-  const handleInterestRateChange = (e) => {
-    setCompoundInvestment({ ...compoundInvestment, interest_rate: e.target.value });
-  };
+  useEffect(() => {
+    setFixedInvestment((prev) => ({
+      ...prev,
+      amount: amount,
+      months_duration: monthsDuration,
+    }));
 
-  const handlePrincipalChange = (e) => {
-    setCompoundInvestment({...compoundInvestment, amount: e.target.value})
-    setFixedInvestment({...fixedInvestment, amount: e.target.value})
-    setFixedInvestmentWithReinvestment({...fixedInvestmentWithReinvestment, amount: e.target.value})
-  }
+    setFixedInvestmentWithReinvestment((prev) => ({
+      ...prev,
+      amount: amount,
+      months_duration: monthsDuration,
+    }));
 
-  const handleMonthsDurationChange = (e) => {
-    setCompoundInvestment({...compoundInvestment, months_duration: e.target.value})
-    setFixedInvestment({...fixedInvestment, months_duration: e.target.value})
-    setFixedInvestmentWithReinvestment({...fixedInvestmentWithReinvestment, months_duration: e.target.value})
-  }
+    setCompoundInvestment((prev) => ({
+      ...prev,
+      amount: amount,
+      months_duration: monthsDuration,
+    }));
 
-  const handleInterestRateFixedInvestChange = (e) => {
-    const { name, value } = e.target;
-    setFixedInvestment({...fixedInvestment, [name]: value});
-  }
+  }, [amount, monthsDuration]);
 
-  const handleInterestRateFixedInvestWithReinvestChange = (e) => {
-    const { name, value } = e.target;
-    setFixedInvestmentWithReinvestment({...fixedInvestmentWithReinvestment, [name]: value});
+  useEffect(() => {
+    if (!allowSubmit){
+      setAllowSubmit(true)
+    }
+  }, [compoundInvestment, fixedInvestmentWithReinvestment, fixedInvestment]);
+
+
+  useEffect(() => {
+    if (showCompoundInvstment || showFixedInvest || showFixedInvest){
+      setAllowSubmit(true)
+    }
+
+  }, [showCompoundInvstment, showFixedInvest, showFixedInvestWithReinvest]);
+
+
+  const handleToggleCompoundInvestChange = (checked) => {
+    setShowCompoundInvestment(checked);
   }
 
   const handleToggleFixedInvestChange = (checked) => {
@@ -61,13 +80,21 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onCalculateMoneyMarket(compoundInvestment);
-    if (showFixedInvest) {
+    if (!allowSubmit)
+      return;
+
+    if (showCompoundInvstment && compoundInvestment.interest_rate) {
+      onCalculateMoneyMarket(compoundInvestment);
+    }
+
+    if (showFixedInvest && fixedInvestment.interest_rate) {
       onCalculateFixedInvest(fixedInvestment);
     }
-    if(showFixedInvestWithReinvest){
+    if(showFixedInvestWithReinvest && fixedInvestmentWithReinvestment.interest_rate){
       onCalculateFixedInvestWithReinvest(fixedInvestmentWithReinvestment);
     }
+
+    setAllowSubmit(false);
   };
 
   return (
@@ -84,56 +111,71 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
             <input
                 type="number"
                 name="principal"
-                value={compoundInvestment.amount}
-                onChange={handlePrincipalChange}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 placeholder="Ej. 10000"
                 required
                 className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual (%)</label>
-            <input
-                type="number"
-                name="interest_rate"
-                value={compoundInvestment.interest_rate}
-                onChange={handleInterestRateChange}
-                placeholder="Ej. 5"
-                required
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700">Duración en Meses</label>
             <input
                 type="number"
                 name="months_duration"
-                value={compoundInvestment.months_duration}
-                onChange={handleMonthsDurationChange}
+                value={monthsDuration}
+                onChange={(e) => setMonthsDuration(e.target.value)}
                 placeholder="Ej. 12"
                 required
                 className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
         </div>
-        {}
+
+        {/*Inversión con interes compuesto */}
+        <div className="space-y-4">
+          <div className="">
+            <ToggleSwitch
+                label="Cargar inversión con interes compuesto (capitalización diaria de intereses)"
+                onChange={handleToggleCompoundInvestChange}
+                setResult={setResultCompoundInvestment}
+            />
+          </div>
+          {showCompoundInvstment && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual (%)</label>
+                <input
+                    type="number"
+                    name="interest_rate"
+                    value={compoundInvestment.interest_rate}
+                    onChange={(e) => setCompoundInvestment({...compoundInvestment, interest_rate: e.target.value})}
+                    placeholder="Ej. 5"
+                    required
+                    className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
+                />
+              </div>
+          )}
+        </div>
 
         {/*Inversión a plazo fijo sin reinvertir los intereses */}
         <div className="space-y-4">
           <div>
             <ToggleSwitch
-                label="Cargar inversión a plazo fijo (sin reinversión de intereses)"
+                label="Cargar inversión a plazo fijo (capitalización anual de intereses)"
                 onChange={handleToggleFixedInvestChange}
+                setResult={setResultFixedInvestment}
             />
           </div>
           {showFixedInvest && (
               <div>
-                <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual del plazo fijo (%)</label>
+                <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual del plazo fijo
+                  (%)</label>
                 <input
                     type="number"
                     name="interest_rate"
                     value={fixedInvestment.interest_rate}
-                    onChange={handleInterestRateFixedInvestChange}
+                    onChange={(e) => setFixedInvestment({...fixedInvestment, interest_rate: e.target.value})}
                     placeholder="Ej. 5"
                     className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
                 />
@@ -146,8 +188,9 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
         <div className="space-y-4">
           <div>
             <ToggleSwitch
-                label="Cargar inversión a plazo fijo con reinversión de intereses"
+                label="Cargar inversión a plazo fijo (capitalización mensual de intereses)"
                 onChange={handleToggleFixedInvestWithReinvestChange}
+                setResult={setResultInvestWithReinvest}
             />
           </div>
           {showFixedInvestWithReinvest && (
@@ -157,7 +200,7 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
                     type="number"
                     name="interest_rate"
                     value={fixedInvestmentWithReinvestment.interest_rate}
-                    onChange={handleInterestRateFixedInvestWithReinvestChange}
+                    onChange={(e) => setFixedInvestmentWithReinvestment({...fixedInvestmentWithReinvestment, interest_rate: e.target.value})}
                     placeholder="Ej. 5"
                     className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
                 />

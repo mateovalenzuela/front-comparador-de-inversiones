@@ -33,11 +33,17 @@ const App = () => {
           onCalculateMoneyMarket={handleCalculateMoneyMarket}
           onCalculateFixedInvest={handleCalculateFixedInvest}
           onCalculateFixedInvestWithReinvest={handleCalculateFixedInvestWithReinvest}
+          setResultCompoundInvestment={setResultsMoneyMarket}
+          setResultFixedInvestment={setResultsFixedInvest}
+          setResultInvestWithReinvest={setResultsFixedInvestWithReinvest}
       />
-      {resultsMoneyMarket.length > 0 && <InvestmentResults resultsFixedInvest={resultsFixedInvest}
-                                                           resultsMoneyMarket={resultsMoneyMarket}
-                                                           resultsFixedInvestWithReinvest={resultsFixedInvestWithReinvest}
-      />}
+      {(resultsMoneyMarket.length > 0 || resultsFixedInvest.length > 0 || resultsFixedInvestWithReinvest.length > 0) && (
+          <InvestmentResults
+              resultsFixedInvest={resultsFixedInvest}
+              resultsMoneyMarket={resultsMoneyMarket}
+              resultsFixedInvestWithReinvest={resultsFixedInvestWithReinvest}
+          />
+      )}
     </div>
   );
 };
