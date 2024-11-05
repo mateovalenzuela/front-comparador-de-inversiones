@@ -22,11 +22,3 @@ jobs:
         - name: Publish app image
           run: |
             docker push mateovalenzuela/frontinversiones:latest
-        
-        - name: App service auth
-          uses: azure/webapps-deploy@v2
-          with:
-            app-name: 'mateovalenzuela-comparador-de-inversiones'
-            publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-            images: 'mateovalenzuela/frontinversiones:latest'
-
