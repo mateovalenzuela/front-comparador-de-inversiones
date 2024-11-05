@@ -28,6 +28,8 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
   const [showFixedInvest, setShowFixedInvest] = useState(false)
   const [showFixedInvestWithReinvest, setShowFixedInvestWithReinvest] = useState(false)
   const [allowSubmit, setAllowSubmit] = useState(false)
+  const [displayAmount, setDisplayAmount] = useState("");
+
 
 
   useEffect(() => {
@@ -97,129 +99,154 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
     setAllowSubmit(false);
   };
 
+  // Función para formatear con puntos de miles
+  const formatAmount = (value) => {
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  // Maneja el cambio de input
+  const handleAmountChange = (e) => {
+    const rawValue = e.target.value.replace(/\./g, ""); // elimina puntos para mantener el valor sin formato
+    if (!isNaN(rawValue)) {
+      setAmount(rawValue); // valor sin formato
+      setDisplayAmount(formatAmount(rawValue)); // valor con formato
+    }
+  };
+
+  // Quita el formato cuando el input pierde el foco
+  const handleBlur = () => setDisplayAmount(formatAmount(amount));
+
+
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Comparar Inversiones</h2>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <h2 className="text-3xl font-bold text-indigo-700 mb-8 text-center">Comparar Inversiones</h2>
+    <form onSubmit={handleSubmit} className="space-y-8">
 
+      {/* Inversión Interés Compuesto */}
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Capital Inicial ($)</label>
+          <input
+              type="text"
+              name="principal"
+              value={displayAmount}
+              onChange={handleAmountChange}
+              onBlur={handleBlur}
+              placeholder="Ej. 10.000"
+              required
+              className="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
+          />
+        </div>
 
-        {/* Inversión Interés Compuesto */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-700">Inversión Interés Compuesto</h3>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Capital Inicial ($)</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Duración en Meses</label>
+          <input
+              type="number"
+              name="months_duration"
+              value={monthsDuration}
+              onChange={(e) => setMonthsDuration(e.target.value)}
+              placeholder="Ej. 12"
+              max={120}
+              min={1}
+              required
+              className="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
+          />
+        </div>
+      </div>
+
+      {/* Inversión con interés compuesto */}
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <ToggleSwitch
+              label="Cargar inversión con capitalización diaria de intereses"
+              onChange={handleToggleCompoundInvestChange}
+              setResult={setResultCompoundInvestment}
+          />
+        </div>
+        {showCompoundInvstment && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual (TNA %)</label>
             <input
-                type="number"
-                name="principal"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Ej. 10000"
-                required
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
+              type="number"
+              name="interest_rate"
+              value={compoundInvestment.interest_rate}
+              onChange={(e) => setCompoundInvestment({ ...compoundInvestment, interest_rate: e.target.value })}
+              placeholder="Ej. 5"
+              required
+              max={999}
+              min={0}
+              className="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
             />
           </div>
+        )}
+      </div>
 
+      {/* Inversión a plazo fijo sin reinvertir los intereses */}
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <ToggleSwitch
+            label="Cargar inversión con capitalización anual de intereses"
+            onChange={handleToggleFixedInvestChange}
+            setResult={setResultFixedInvestment}
+          />
+        </div>
+        {showFixedInvest && (
           <div>
-            <label className="block text-sm font-medium text-gray-700">Duración en Meses</label>
+            <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual (TNA %)</label>
             <input
-                type="number"
-                name="months_duration"
-                value={monthsDuration}
-                onChange={(e) => setMonthsDuration(e.target.value)}
-                placeholder="Ej. 12"
-                required
-                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
+              type="number"
+              name="interest_rate"
+              value={fixedInvestment.interest_rate}
+              onChange={(e) => setFixedInvestment({ ...fixedInvestment, interest_rate: e.target.value })}
+              placeholder="Ej. 5"
+              max={999}
+              min={0}
+              className="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
             />
           </div>
-        </div>
+        )}
+      </div>
 
-        {/*Inversión con interes compuesto */}
-        <div className="space-y-4">
-          <div className="">
-            <ToggleSwitch
-                label="Cargar inversión con interes compuesto (capitalización diaria de intereses)"
-                onChange={handleToggleCompoundInvestChange}
-                setResult={setResultCompoundInvestment}
-            />
-          </div>
-          {showCompoundInvstment && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual (%)</label>
-                <input
-                    type="number"
-                    name="interest_rate"
-                    value={compoundInvestment.interest_rate}
-                    onChange={(e) => setCompoundInvestment({...compoundInvestment, interest_rate: e.target.value})}
-                    placeholder="Ej. 5"
-                    required
-                    className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
-                />
-              </div>
-          )}
+      {/* Inversión a plazo fijo reinvirtiendo los intereses */}
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <ToggleSwitch
+            label="Cargar inversión con capitalización mensual de intereses"
+            onChange={handleToggleFixedInvestWithReinvestChange}
+            setResult={setResultInvestWithReinvest}
+          />
         </div>
-
-        {/*Inversión a plazo fijo sin reinvertir los intereses */}
-        <div className="space-y-4">
+        {showFixedInvestWithReinvest && (
           <div>
-            <ToggleSwitch
-                label="Cargar inversión a plazo fijo (capitalización anual de intereses)"
-                onChange={handleToggleFixedInvestChange}
-                setResult={setResultFixedInvestment}
+            <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual (TNA %)</label>
+            <input
+              type="number"
+              name="interest_rate"
+              value={fixedInvestmentWithReinvestment.interest_rate}
+              onChange={(e) =>
+                setFixedInvestmentWithReinvestment({ ...fixedInvestmentWithReinvestment, interest_rate: e.target.value })
+              }
+              placeholder="Ej. 5"
+              max={999}
+              min={0}
+              className="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
             />
           </div>
-          {showFixedInvest && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual del plazo fijo
-                  (%)</label>
-                <input
-                    type="number"
-                    name="interest_rate"
-                    value={fixedInvestment.interest_rate}
-                    onChange={(e) => setFixedInvestment({...fixedInvestment, interest_rate: e.target.value})}
-                    placeholder="Ej. 5"
-                    className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
-                />
-              </div>
-          )}
-        </div>
+        )}
+      </div>
 
-
-        {/*Inversión a plazo fijo reinvirtiendo los intereses */}
-        <div className="space-y-4">
-          <div>
-            <ToggleSwitch
-                label="Cargar inversión a plazo fijo (capitalización mensual de intereses)"
-                onChange={handleToggleFixedInvestWithReinvestChange}
-                setResult={setResultInvestWithReinvest}
-            />
-          </div>
-          {showFixedInvestWithReinvest && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual del plazo fijo (%)</label>
-                <input
-                    type="number"
-                    name="interest_rate"
-                    value={fixedInvestmentWithReinvestment.interest_rate}
-                    onChange={(e) => setFixedInvestmentWithReinvestment({...fixedInvestmentWithReinvestment, interest_rate: e.target.value})}
-                    placeholder="Ej. 5"
-                    className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm"
-                />
-              </div>
-          )}
-        </div>
-
-        {/* Botón de envío en una fila completa */}
-        <div className="md:col-span-2">
-          <button
-              type="submit"
-              className="w-full p-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700"
-          >
-            Calcular Inversiones
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+      {/* Botón de envío en una fila completa */}
+      <div>
+        <button
+          type="submit"
+          className="w-full p-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition"
+        >
+          Calcular Inversiones
+        </button>
+      </div>
+    </form>
+  </div>
+);
 };
 
 export default InvestForm;

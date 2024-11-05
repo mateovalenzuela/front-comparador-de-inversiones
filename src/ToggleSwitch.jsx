@@ -19,7 +19,7 @@ const ToggleSwitch = ({ label, onChange, setResult }) => {
             <button
                 onClick={handleToggle}
                 className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors duration-200 ease-in-out ${
-                    isChecked ? 'bg-blue-600' : 'bg-gray-200'
+                    isChecked ? 'bg-indigo-600' : 'bg-gray-200'
                 }`}
             >
                 <span

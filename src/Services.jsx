@@ -1,6 +1,6 @@
 export const calculateMoneyMarket = async (data) => {
   try {
-    const response = await fetch('http://localhost:8000/money_market_investment', {
+    const response = await fetch('/api/money_market_investment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -15,7 +15,7 @@ export const calculateMoneyMarket = async (data) => {
 
 export const calculateFixedInvestWithReinvest = async (data) => {
   try {
-    const response = await fetch('http://localhost:8000/fixed_term_with_reinvestment', {
+    const response = await fetch('/api/fixed_term_with_reinvestment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export const calculateFixedInvestWithReinvest = async (data) => {
 
 export const calculateFixedInvest = async (data) => {
   try {
-    const response = await fetch('http://localhost:8000/fixed_term_without_reinvestment', {
+    const response = await fetch('/api/fixed_term_without_reinvestment', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

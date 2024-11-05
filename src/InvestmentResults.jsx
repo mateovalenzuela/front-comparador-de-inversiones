@@ -79,55 +79,73 @@ const InvestmentResults = ({ resultsMoneyMarket, resultsFixedInvest, resultsFixe
     },
   };
 
+  function formatNumber(num) {
+  return num.toLocaleString("es-AR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
   return (
-    <div className="bg-white p-6 rounded-md shadow-lg mt-6">
-      <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">Resultados de Inversiones</h2>
+  <div className="bg-white py-8 rounded-xl shadow-2xl mt-8 max-w-3xl mx-auto">
+    <h2 className="text-3xl pr-8 pl-8 font-bold text-center text-indigo-700 mb-6">Resultados de Inversiones</h2>
 
-      <div className="mb-4">
-        <Line data={data} options={options}/>
-      </div>
-
-      <div className="pt-4">
-        <h2 className="text-lg text-center font-semibold text-gray-700">Resumen:</h2>
-
-        {/* Interés Compuesto */}
-        {resultsMoneyMarket.length > 0 && (
-          <div className="mt-2 p-2">
-            <h4 className="font-semibold text-gray-800 py-2">Interés Compuesto:</h4>
-            <ul className="ml-4 list-disc">
-              <li>Importe Inicial: ${resultsMoneyMarket[0].amount}</li>
-              <li>Importe Final: ${resultsMoneyMarket[resultsMoneyMarket.length - 1].amount}</li>
-              <li>Rendimiento: {((resultsMoneyMarket[resultsMoneyMarket.length - 1].amount / resultsMoneyMarket[0].amount - 1) * 100).toFixed(2)}%</li>
-            </ul>
-          </div>
-        )}
-
-        {/* Plazo Fijo con Reinversión */}
-        {resultsFixedInvestWithReinvest.length > 0 && (
-          <div className="mt-2 p-2">
-            <h4 className="font-semibold text-gray-800 py-2">Plazo Fijo Mensual:</h4>
-            <ul className="ml-4 list-disc">
-              <li>Importe Inicial: ${resultsFixedInvestWithReinvest[0].amount}</li>
-              <li>Importe Final: ${resultsFixedInvestWithReinvest[resultsFixedInvestWithReinvest.length - 1].amount}</li>
-              <li>Rendimiento: {((resultsFixedInvestWithReinvest[resultsFixedInvestWithReinvest.length - 1].amount / resultsFixedInvestWithReinvest[0].amount - 1) * 100).toFixed(2)}%</li>
-            </ul>
-          </div>
-        )}
-
-        {/* Plazo Fijo sin Reinversión */}
-        {resultsFixedInvest.length > 0 && (
-          <div className="mt-2 p-2">
-            <h4 className="font-semibold text-gray-800 py-2">Plazo Fijo Anual:</h4>
-            <ul className="ml-4 list-disc">
-              <li>Importe Inicial: ${resultsFixedInvest[0].amount}</li>
-              <li>Importe Final: ${resultsFixedInvest[resultsFixedInvest.length - 1].amount}</li>
-              <li>Rendimiento: {((resultsFixedInvest[resultsFixedInvest.length - 1].amount / resultsFixedInvest[0].amount - 1) * 100).toFixed(2)}%</li>
-            </ul>
-          </div>
-        )}
-      </div>
+    {/* Gráfico de Resultados */}
+    <div className=" pr-1 pl-1 md:p-8">
+      <Line
+        data={data}
+        options={{
+          ...options,
+          responsive: true,
+          maintainAspectRatio: false,
+        }}
+        className="w-full h-64 sm:h-80"
+      />
     </div>
-  );
+
+    {/* Resumen de Inversiones */}
+    <div className="p-8">
+      <h2 className="text-xl font-semibold text-center text-indigo-600 mb-4">Resumen</h2>
+
+      {/* Interés Compuesto */}
+      {resultsMoneyMarket.length > 0 && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-indigo-200 shadow-sm">
+          <h4 className="text-lg font-semibold text-indigo-700 mb-3">Interés Compuesto</h4>
+          <ul className="ml-5 space-y-2 text-gray-800 list-disc">
+            <li><strong>Capital Inicial:</strong> ${formatNumber(resultsMoneyMarket[0].amount)}</li>
+            <li><strong>Capital Final:</strong> ${formatNumber(resultsMoneyMarket[resultsMoneyMarket.length - 1].amount)}</li>
+            <li><strong>Rendimiento:</strong> {((resultsMoneyMarket[resultsMoneyMarket.length - 1].amount / resultsMoneyMarket[0].amount - 1) * 100).toFixed(2)}%</li>
+          </ul>
+        </div>
+      )}
+
+      {/* Plazo Fijo con Reinversión */}
+      {resultsFixedInvestWithReinvest.length > 0 && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-indigo-200 shadow-sm">
+          <h4 className="text-lg font-semibold text-indigo-700 mb-3">Plazo Fijo Mensual</h4>
+          <ul className="ml-5 space-y-2 text-gray-800 list-disc">
+            <li><strong>Capital Inicial:</strong> ${formatNumber(resultsFixedInvestWithReinvest[0].amount)}</li>
+            <li><strong>Capital Final:</strong> ${formatNumber(resultsFixedInvestWithReinvest[resultsFixedInvestWithReinvest.length - 1].amount)}</li>
+            <li><strong>Rendimiento:</strong> {((resultsFixedInvestWithReinvest[resultsFixedInvestWithReinvest.length - 1].amount / resultsFixedInvestWithReinvest[0].amount - 1) * 100).toFixed(2)}%</li>
+          </ul>
+        </div>
+      )}
+
+      {/* Plazo Fijo sin Reinversión */}
+      {resultsFixedInvest.length > 0 && (
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-indigo-200 shadow-sm">
+          <h4 className="text-lg font-semibold text-indigo-700 mb-3">Plazo Fijo Anual</h4>
+          <ul className="ml-5 space-y-2 text-gray-800 list-disc">
+            <li><strong>Capital Inicial:</strong> ${formatNumber(resultsFixedInvest[0].amount)}</li>
+            <li><strong>Capital Final:</strong> ${formatNumber(resultsFixedInvest[resultsFixedInvest.length - 1].amount)}</li>
+            <li><strong>Rendimiento:</strong> {((resultsFixedInvest[resultsFixedInvest.length - 1].amount / resultsFixedInvest[0].amount - 1) * 100).toFixed(2)}%</li>
+          </ul>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 };
 
 export default InvestmentResults;
