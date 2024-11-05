@@ -23,4 +23,21 @@ jobs:
           run: |
             docker push mateovalenzuela/frontinversiones:latest
         
-    
+        - name: Login to Azure
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
+        - name: Deploy to Azure Web App
+          run: |
+            az webapp config container set \
+              --name mateovalenzuela-comparador-de-inversiones \
+              --resource-group proyecto-inversiones \
+              --docker-custom-image-name mateovalenzuela/frontinversiones:latest \
+              --docker-registry-server-url https://index.docker.io/v1/ \
+              --docker-registry-server-user ${{ secrets.DOCKER_USERNAME }} \
+              --docker-registry-server-password ${{ secrets.DOCKER_TOKEN }}
+
+        - name: Restart Azure Web App to apply new image
+          run: |
+            az webapp restart --name mateovalenzuela-comparador-de-inversiones --resource-group proyecto-inversiones
