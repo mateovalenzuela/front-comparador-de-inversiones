@@ -181,32 +181,6 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
         )}
       </div>
 
-      {/* Inversión a plazo fijo sin reinvertir los intereses */}
-      <div className="space-y-4">
-        <div className="flex justify-between">
-          <ToggleSwitch
-            label="Cargar inversión con capitalización anual de intereses"
-            onChange={handleToggleFixedInvestChange}
-            setResult={setResultFixedInvestment}
-          />
-        </div>
-        {showFixedInvest && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual (TNA %)</label>
-            <input
-              type="number"
-              name="interest_rate"
-              value={fixedInvestment.interest_rate}
-              onChange={(e) => setFixedInvestment({ ...fixedInvestment, interest_rate: e.target.value })}
-              placeholder="Ej. 5"
-              max={999}
-              min={0}
-              className="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
-            />
-          </div>
-        )}
-      </div>
-
       {/* Inversión a plazo fijo reinvirtiendo los intereses */}
       <div className="space-y-4">
         <div className="flex justify-between">
@@ -226,6 +200,32 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
               onChange={(e) =>
                 setFixedInvestmentWithReinvestment({ ...fixedInvestmentWithReinvestment, interest_rate: e.target.value })
               }
+              placeholder="Ej. 5"
+              max={999}
+              min={0}
+              className="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Inversión a plazo fijo sin reinvertir los intereses */}
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <ToggleSwitch
+            label="Cargar inversión con capitalización anual de intereses"
+            onChange={handleToggleFixedInvestChange}
+            setResult={setResultFixedInvestment}
+          />
+        </div>
+        {showFixedInvest && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Tasa de Interés Anual (TNA %)</label>
+            <input
+              type="number"
+              name="interest_rate"
+              value={fixedInvestment.interest_rate}
+              onChange={(e) => setFixedInvestment({ ...fixedInvestment, interest_rate: e.target.value })}
               placeholder="Ej. 5"
               max={999}
               min={0}
