@@ -1,46 +1,37 @@
-name: CI/CD with Docker Compose for Azure App Service
-
+name: Docker image CI
 on:
   push:
-    branches: [ "master" ]  # Cambia según la rama que uses para despliegues
+    branches: [ "master" ]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      # Paso 1: Clonar el repositorio
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    deploy:
+      name: Docker build
+      runs-on: ubuntu-latest
+      steps: 
+        - name: Check out th e repo
+          uses: actions/checkout@v3
+        - name: Login to Docker Hub
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_TOKEN }}
+        - name: Build app image
+          run: |
+            docker build --platform linux --tag mateovalenzuela/frontinversiones:latest .
+            
+        - name: Publish app image
+          run: |
+            docker push mateovalenzuela/frontinversiones:latest
 
-      # Paso 2: Log in to Docker Hub
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+        - name: Log in to Azure
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Paso 3: Build and push backend image
-      - name: Build and push backend image
-        run: |
-          docker build --platform linux --tag mateovalenzuela/apiinversiones:latest ./backend
-          docker push mateovalenzuela/apiinversiones:latest
-
-      # Paso 4: Build and push frontend image
-      - name: Build and push frontend image
-        run: |
-          docker build --platform linux --tag mateovalenzuela/frontinversiones:latest ./frontend
-          docker push mateovalenzuela/frontinversiones:latest
-
-      # Paso 5: Log in to Azure
-      - name: Log in to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      # Paso 6: Deploy using Docker Compose
-      - name: Deploy with Docker Compose
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: mateovalenzuela-comparador-de-inversiones
-          slot-name: Production
-          package: ./  # Directorio que contiene el docker-compose.yml
+        # Paso 6: Deploy using Docker Compose
+        - name: Deploy with Docker Compose
+          uses: azure/webapps-deploy@v2
+          with:
+            app-name: mateovalenzuela-comparador-de-inversiones
+            slot-name: Production
+            package: ./ 
