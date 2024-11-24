@@ -36,3 +36,4 @@ jobs:
             images: |
               mateovalenzuela/apiinversiones:latest
               mateovalenzuela/frontinversiones:latest
+            docker-compose-file: ./docker-compose.yml
