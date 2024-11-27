@@ -119,7 +119,7 @@ const InvestForm = ({ onCalculateMoneyMarket, onCalculateFixedInvest, onCalculat
 
   return (
   <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-    <h2 className="text-3xl font-bold text-neutral-950 mb-8 text-center">Comparar Inversiones</h2>
+    <h2 className="text-3xl font-bold text-indigo-700 mb-8 text-center">Comparar Inversiones</h2>
     <form onSubmit={handleSubmit} className="space-y-8">
 
       {/* Inversión Interés Compuesto */}
