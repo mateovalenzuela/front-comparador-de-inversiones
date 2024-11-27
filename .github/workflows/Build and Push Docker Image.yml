@@ -47,8 +47,20 @@ jobs:
         
         - name: Validate Deployment
           run: |
-            RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://${{ secrets.URL_APP }})
-            if [ $RESPONSE -ne 200 ]; then
-              echo "Deployment failed with HTTP status $RESPONSE"
-              exit 1
-            fi
+            MAX_RETRIES=10  # Número máximo de intentos
+            RETRY_DELAY=60  # Tiempo de espera entre intentos (en segundos)
+
+            for ((i=1; i<=MAX_RETRIES; i++)); do
+                RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://${{ secrets.URL_APP }})
+                
+                if [ "$RESPONSE" -eq 200 ]; then
+                    echo "Deployment successful! HTTP status $RESPONSE"
+                    exit 0
+                fi
+
+                echo "Attempt $i/$MAX_RETRIES failed with HTTP status $RESPONSE. Retrying in $RETRY_DELAY seconds..."
+                sleep $RETRY_DELAY
+            done
+
+            echo "Deployment failed after $MAX_RETRIES attempts. HTTP status $RESPONSE"
+            exit 1
